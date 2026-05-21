@@ -177,6 +177,12 @@ class VLLM(RemoteableMixin):
 
     def _load(self, repo_id: str, **kwargs) -> "Module":
 
+        # Disable prefix caching by default. Prefix caching reuses KV values
+        # from previous requests, which can skip the forward pass for cached
+        # tokens — hooks won't fire and interventions on those tokens are
+        # silently skipped. Users can override with enable_prefix_caching=True.
+        kwargs.setdefault("enable_prefix_caching", False)
+
         meta_model = self._load_meta(repo_id, **kwargs)
 
         destroy_model_parallel()
