@@ -93,5 +93,21 @@ class AsyncVLLMBackend(Backend):
                     )
                     per_req = saves_by_req.get(output.request_id)
                     if per_req:
+                        # Surface a deferred intervention error (defer mode is
+                        # always on for the vLLM interleaver) before exposing
+                        # saves, so the user's ``async for`` raises the original
+                        # cause instead of silently yielding an output whose
+                        # failed intervention left saves missing. Mirrors the
+                        # sync path (vllm.py) and the serve path. Control-flow
+                        # signals (tracer.stop()) are filtered out inside.
+                        req_exc = per_req.pop("__nnsight_exceptions__", None)
+                        if req_exc:
+                            from ...intervention.errors import (
+                                surface_server_errors,
+                            )
+
+                            surface_server_errors(
+                                list(req_exc.values()), context="[vLLM]"
+                            )
                         output.saves = per_req
             yield output
