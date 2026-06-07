@@ -782,6 +782,59 @@ class TestAsyncEngine:
 
         async_loop.run_until_complete(run())
 
+    def test_async_multi_invoke_runs_all_invokes(
+        self, vllm_gpt2_async, async_loop, ET_prompt: str, MSG_prompt: str
+    ):
+        """Regression: a multi-invoke async trace must run EVERY invoke.
+
+        Previously ``AsyncVLLMBackend`` submitted only ``prompts[0]`` /
+        ``params[0]``, so every invoke past the first was serialized but never
+        sent to the engine: exactly one finished request streamed, and
+        trace-shared saves were never collected (the worker's ``received_count``
+        never reached ``expected_count``). This is the async counterpart of
+        ``test_shared_list_across_invokes``.
+        """
+        prompts = [ET_prompt, MSG_prompt]
+
+        async def run():
+            with vllm_gpt2_async.trace(
+                temperature=0.0, top_p=1, max_tokens=1
+            ) as tracer:
+                out_ids = [list() for _ in range(len(prompts))].save()
+                for i, prompt in enumerate(prompts):
+                    with tracer.invoke(prompt):
+                        out_ids[i].append(vllm_gpt2_async.logits.argmax(dim=-1))
+
+            finished_tokens = []
+            saves = {}
+            async for output in tracer.backend:
+                if output.finished:
+                    if output.outputs:
+                        finished_tokens.append(output.outputs[0].token_ids[-1])
+                    if hasattr(output, "saves") and output.saves:
+                        saves.update(output.saves)
+            return finished_tokens, saves
+
+        finished_tokens, saves = async_loop.run_until_complete(run())
+
+        # Each invoke must run and finish as its own request — not just prompt 0.
+        assert len(finished_tokens) == 2, (
+            f"Expected 2 finished requests (one per invoke), got "
+            f"{len(finished_tokens)}"
+        )
+        decoded = {
+            vllm_gpt2_async.tokenizer.decode([t]) for t in finished_tokens
+        }
+        assert decoded == {" Paris", " New"}, decoded
+
+        # Trace-shared saves are collected only once EVERY invoke's request has
+        # finished; with the bug they were never collected at all.
+        assert "out_ids" in saves
+        collected = saves["out_ids"]
+        assert len(collected) == 2
+        assert len(collected[0]) == 1
+        assert len(collected[1]) == 1
+
 
 # =============================================================================
 # Async Engine + Ray Distributed Executor
