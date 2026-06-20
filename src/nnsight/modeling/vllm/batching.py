@@ -10,6 +10,7 @@ from vllm.model_executor.layers.linear import (
     split_tensor_along_last_dim,
     tensor_model_parallel_all_reduce,
 )
+from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
 
 
 class VLLMBatcher(Batcher):
@@ -29,8 +30,13 @@ class VLLMBatcher(Batcher):
         self.parallel = False
         self.gathered = False
         self.type = None
+        # True once wrap() has run, i.e. only when tensor_parallel_size > 1 (wrap is gated on that in
+        # GPUModelRunner). gather_param keys off this so tp=1 is byte-identical (no gather, no unpad).
+        self.tp_active = False
 
     def wrap(self, model: Envoy):
+
+        self.tp_active = True
 
         def pre_input_hook(module: torch.nn.Module, args: Any, kwargs: Any):
             self.current_module = module
@@ -166,3 +172,47 @@ class VLLMBatcher(Batcher):
         self.check_gathered()
 
         return super().swap(batch_group, swap_value)
+
+    def gather_param(self, module, value):
+        """All-gather a tensor-parallel sharded parameter back to its full logical shape.
+
+        Called from ``Envoy.__getattr__`` when intervention code reads a module attribute (e.g.
+        ``lm_head.weight``) inside a trace. vLLM shards parameters across TP ranks; without this the
+        trace sees only the local shard, so a vocab-indexed read like ``head.weight[token_id]`` lands
+        on the wrong global row on a rank that does not own that token.
+
+        The sharded dim is keyed off the MODULE CLASS — vLLM's own parallelism abstraction — NOT the
+        parameter's ``output_dim``/``input_dim`` attrs (vLLM sets BOTH on every linear weight; they
+        only label the dims, they don't say which is sharded):
+          - ``RowParallelLinear``            shards the INPUT dim  -> dim 1 (weight only; bias is replicated)
+          - ``ColumnParallelLinear``         shards the OUTPUT dim -> dim 0 (weight and bias)
+          - ``VocabParallelEmbedding``       shards the VOCAB dim  -> dim 0 (then strip vocab padding)
+        Subclasses are covered by isinstance (QKV/MergedColumn -> Column; ParallelLMHead -> Vocab).
+        Anything else (e.g. ReplicatedLinear, norms) is returned unchanged. Only fires when TP is
+        active (``tp_active``), so tp=1 is byte-identical.
+        """
+
+        if not self.tp_active:
+            return value
+
+        if isinstance(module, RowParallelLinear):
+            # Only the 2-D weight is sharded (on the input dim); the bias is replicated, leave it.
+            if not (isinstance(value, torch.Tensor) and value.ndim >= 2):
+                return value
+            shard_dim = 1
+        elif isinstance(module, (ColumnParallelLinear, VocabParallelEmbedding)):
+            shard_dim = 0
+        else:
+            return value  # not a TP-sharded module we gather
+
+        full = tensor_model_parallel_all_gather(value.data, dim=shard_dim)
+
+        # VocabParallelEmbedding/ParallelLMHead pad the vocab to a TP-divisible size; for standard
+        # (non-LoRA) models the real rows are [0:org_vocab_size] with padding appended at the end, so
+        # strip it to recover the true [vocab_size, hidden]. (Interleaved per-partition padding from
+        # added-vocab/LoRA would need shard_indices-based reconstruction — not handled here.)
+        org_vocab_size = getattr(module, "org_vocab_size", None)
+        if org_vocab_size is not None and shard_dim == 0:
+            full = full[:org_vocab_size]
+
+        return full

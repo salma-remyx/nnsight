@@ -195,6 +195,21 @@ class Batcher:
 
         return (args, kwargs), None
 
+    def gather_param(self, module, value):
+        """Transform a module parameter read inside a trace before it reaches intervention code.
+
+        The base batcher models no parallelism, so the parameter is returned unchanged. A
+        parallelism-aware subclass (``VLLMBatcher``) overrides this to all-gather a tensor-parallel
+        sharded parameter back to its full logical shape, so intervention code reading e.g.
+        ``module.weight[token_id]`` sees the complete weight on every rank rather than a local shard.
+
+        Args:
+            module: The module the parameter was read from (its TP/shard metadata lives here).
+            value: The raw attribute value (e.g. the local-shard ``weight`` tensor).
+        """
+
+        return value
+
     def narrow(self, batch_group: Optional[List[int]]) -> Any:
         """Extract an invoke's slice from the current activation value.
 

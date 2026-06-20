@@ -1031,6 +1031,15 @@ class Envoy(Batchable):
                     return util.fetch_attr(self, value.__path__[len(self.path) :])
                 return self._add_envoy(value, name)
             else:
+                # Parameter/buffer reads inside a trace are routed through the batcher so a
+                # parallelism-aware batcher (vLLM tensor parallelism) can gather a sharded weight
+                # back to its full logical shape — e.g. a vocab-sharded `lm_head.weight`, so that
+                # `head.weight[token_id]` indexes the true row on every rank, not a local shard.
+                # `interleaving` guarantees `self.interleaver` is set AND that we are inside a trace
+                # on every rank (so the collective gather can't desync); the base batcher's
+                # gather_param is a no-op, leaving non-parallel models untouched.
+                if self.interleaving and isinstance(value, torch.Tensor):
+                    value = self.interleaver.batcher.gather_param(self._module, value)
                 return value
         else:
             raise AttributeError(f"{self} has no attribute {name}")
