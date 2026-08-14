@@ -1,0 +1,18 @@
+schema_version: 1
+fork: salma-remyx/nnsight
+observed_landing_zones:
+- path: docs/patterns/
+  shape_tags:
+  - library-shape-public-api
+  confirmed_by:
+  - arxiv: 2507.08799v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "(none \u2014 library API surface) Invoked by external users\
+      \ via `from nnsight.modeling import KVSteering` (export added in src/nnsight/modeling/__init__.py)\
+      \ and exercised by tests/test_kv_steering.py; no p"
+    branch: kv-cache-steering-for-inducing-reasoning-in-small-language-m
+    timestamp: '2026-08-14T20:16:30Z'
+  last_observed: '2026-08-14T20:16:30Z'
+rejected_shapes: []
+coordination_signals: []
+last_updated: '2026-08-14T20:16:30Z'
