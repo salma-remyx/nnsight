@@ -14,6 +14,15 @@ from transformers import (
 from .language import LanguageModel
 
 
+def _resolve_module_path(model, path: str):
+    """Resolve a dotted module path (e.g. ``"model.language_model.layers.12"``)
+    on an NNsight-wrapped model to the corresponding Envoy."""
+    obj = model
+    for part in path.split("."):
+        obj = obj[int(part)] if part.isdigit() else getattr(obj, part)
+    return obj
+
+
 class VisionLanguageModel(LanguageModel):
     """NNsight wrapper for vision-language models (VLMs) such as LLaVA, Qwen2-VL, etc.
 
@@ -328,6 +337,51 @@ class VisionLanguageModel(LanguageModel):
 
     def _remoteable_model_key(self) -> str:
         return super()._remoteable_model_key()
+
+    def diff_features(
+        self,
+        base_model,
+        inputs,
+        encoder,
+        layer: str,
+        base_layer: Optional[str] = None,
+    ):
+        """Rank SAE features most altered by multimodal fine-tuning.
+
+        Traces identical text through this VLM and through ``base_model``
+        (e.g. its language backbone), encodes the hidden states at ``layer``
+        with ``encoder`` (e.g. an SAE ``encode`` method mapping hidden states
+        ``[..., d_model]`` to feature activations ``[..., n_features]``), and
+        diffs the resulting activations. ``layer`` / ``base_layer`` are dotted
+        module paths (e.g. ``"model.language_model.layers.12"``);
+        ``base_layer`` defaults to ``layer``. Both models must be loaded
+        (``dispatch=True``). Pair with
+        ``nnsight.intervention.feature_diff.steer_features`` to causally
+        remove or steer the discovered features.
+
+        Returns:
+            A ``feature_diff.FeatureDiff`` ranking features by activation
+            change from the base model to this VLM.
+        """
+        from ..intervention.feature_diff import feature_activation_diff
+
+        base_layer = layer if base_layer is None else base_layer
+
+        hidden = {}
+
+        with base_model.trace(inputs):
+            base_hidden = _resolve_module_path(base_model, base_layer).output
+            if isinstance(base_hidden, tuple):
+                base_hidden = base_hidden[0]
+            hidden["base"] = base_hidden.save()
+
+        with self.trace(inputs):
+            mm_hidden = _resolve_module_path(self, layer).output
+            if isinstance(mm_hidden, tuple):
+                mm_hidden = mm_hidden[0]
+            hidden["mm"] = mm_hidden.save()
+
+        return feature_activation_diff(encoder(hidden["base"]), encoder(hidden["mm"]))
 
     def _remoteable_persistent_objects(self) -> dict:
         persistent_objects = super()._remoteable_persistent_objects()
