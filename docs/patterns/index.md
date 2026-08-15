@@ -27,6 +27,7 @@ Change the model's internal state and observe the effect on output.
 - [activation-patching](activation-patching.md) - Replace activations from one run into another. Causal mediation analysis, IOI-style patching.
 - [ablation](ablation.md) - Zero / mean / noise ablate specific components, positions, or features and measure the change.
 - [steering](steering.md) - Add a precomputed direction to the residual stream to push behavior in a target direction.
+- [direction-erasure](direction-erasure.md) - Erase a causally load-bearing direction from the residual stream and test it against a norm-matched wrong-direction control.
 
 ## Compare runs
 
