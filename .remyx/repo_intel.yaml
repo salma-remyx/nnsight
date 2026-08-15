@@ -26,7 +26,14 @@ observed_landing_zones:
       \ pattern in docs/patterns/direction-erasure.md and exercised by te"
     branch: orientation-not-magnitude-the-causal-structure-of-task-vecto
     timestamp: '2026-08-15T07:29:04Z'
-  last_observed: '2026-08-15T07:29:04Z'
+  - arxiv: 2608.10850v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: New public library API exported from src/nnsight/modeling/__init__.py;
+      consumed by external users per README and docs/patterns/spectral-head-rewind.md,
+      composed from pre-existing `model.edit()` (src/n
+    branch: diffract-spectral-view-of-llm-domain-adaptation
+    timestamp: '2026-08-15T14:28:40Z'
+  last_observed: '2026-08-15T14:28:40Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-15T07:29:04Z'
+last_updated: '2026-08-15T14:28:40Z'
