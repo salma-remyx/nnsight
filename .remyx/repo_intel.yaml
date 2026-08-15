@@ -12,7 +12,14 @@ observed_landing_zones:
       \ and exercised by tests/test_kv_steering.py; no p"
     branch: kv-cache-steering-for-inducing-reasoning-in-small-language-m
     timestamp: '2026-08-14T20:16:30Z'
-  last_observed: '2026-08-14T20:16:30Z'
+  - arxiv: 2311.17030v2
+    mode: Mode 2 (adapted port)
+    call_site_specifics: Exported public API surface of the `nnsight` library package
+      (`src/nnsight/modeling/__init__.py`), consumed externally via `from nnsight.modeling
+      import subspace_patch`; also referenced by the shipped
+    branch: is-this-the-subspace-you-are-looking-for-an-interpretability
+    timestamp: '2026-08-15T02:19:14Z'
+  last_observed: '2026-08-15T02:19:14Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-14T20:16:30Z'
+last_updated: '2026-08-15T02:19:14Z'
