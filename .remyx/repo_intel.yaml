@@ -19,7 +19,14 @@ observed_landing_zones:
       import subspace_patch`; also referenced by the shipped
     branch: is-this-the-subspace-you-are-looking-for-an-interpretability
     timestamp: '2026-08-15T02:19:14Z'
-  last_observed: '2026-08-15T02:19:14Z'
+  - arxiv: 2608.11797v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "(none) \u2014 no pre-existing nnsight entry point invokes\
+      \ it; it is a new public library API (nnsight.modeling) documented as a user-facing\
+      \ pattern in docs/patterns/direction-erasure.md and exercised by te"
+    branch: orientation-not-magnitude-the-causal-structure-of-task-vecto
+    timestamp: '2026-08-15T07:29:04Z'
+  last_observed: '2026-08-15T07:29:04Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-15T02:19:14Z'
+last_updated: '2026-08-15T07:29:04Z'
