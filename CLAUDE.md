@@ -60,7 +60,7 @@ If you're new to nnsight, read [docs/concepts/index.md](docs/concepts/index.md) 
 
 ### "I want to run a research pattern (logit lens / patching / steering / SAE...)"
 - [docs/patterns/index.md](docs/patterns/index.md) — full cookbook
-- Most-asked-for: [logit-lens](docs/patterns/logit-lens.md), [activation-patching](docs/patterns/activation-patching.md), [ablation](docs/patterns/ablation.md), [steering](docs/patterns/steering.md), [attention-patterns](docs/patterns/attention-patterns.md), [sae-and-auxiliary-modules](docs/patterns/sae-and-auxiliary-modules.md), [per-head-attention](docs/patterns/per-head-attention.md)
+- Most-asked-for: [logit-lens](docs/patterns/logit-lens.md), [activation-patching](docs/patterns/activation-patching.md), [subspace-patching](docs/patterns/subspace-patching.md), [ablation](docs/patterns/ablation.md), [steering](docs/patterns/steering.md), [attention-patterns](docs/patterns/attention-patterns.md), [sae-and-auxiliary-modules](docs/patterns/sae-and-auxiliary-modules.md), [per-head-attention](docs/patterns/per-head-attention.md)
 
 ### "I'm extending nnsight (custom Envoy / new runtime / new value type)"
 - [docs/usage/extending.md](docs/usage/extending.md) — `envoys=` kwarg + custom `eproperty`

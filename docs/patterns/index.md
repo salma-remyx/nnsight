@@ -25,6 +25,7 @@ What is happening inside the model on a given prompt?
 Change the model's internal state and observe the effect on output.
 
 - [activation-patching](activation-patching.md) - Replace activations from one run into another. Causal mediation analysis, IOI-style patching.
+- [subspace-patching](subspace-patching.md) - Patch only the component inside a hypothesized low-dimensional subspace, with the same-rank random control that makes the result interpretable.
 - [ablation](ablation.md) - Zero / mean / noise ablate specific components, positions, or features and measure the change.
 - [steering](steering.md) - Add a precomputed direction to the residual stream to push behavior in a target direction.
 
