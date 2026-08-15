@@ -46,6 +46,7 @@ Backprop-based interpretability.
 Per-attention-head access.
 
 - [per-head-attention](per-head-attention.md) - Two ways to slice attention output into heads: in-trace reshape, and a custom `Envoy` with `eproperty.transform`.
+- [spectral-head-rewind](spectral-head-rewind.md) - Score attention heads by how much continual pre-training moved them, then rewind the low-importance ones to pre-trained weights with `model.edit()`.
 
 ## Other resources
 

@@ -291,6 +291,32 @@ assert torch.all(out2 == 0)
 ```
 
 
+## Spectral Head Rewind (Domain Adaptation)
+
+Score attention heads by how much continual pre-training moved them, and
+rewind the low-importance ones to the pre-trained weights — adapted from
+[Diffract: Spectral View of LLM Domain Adaptation](https://arxiv.org/abs/2608.10850v1):
+
+```python
+from nnsight import LanguageModel
+from nnsight.modeling import head_importance, rewind_heads
+
+base = LanguageModel("your-org/base-model", dispatch=True)
+cpt = LanguageModel("your-org/domain-adapted", dispatch=True)
+
+# Which heads did the domain adaptation actually move?
+scores = head_importance(cpt, base)
+
+# Rewind the lowest 60% back to pre-trained weights.
+rewound = rewind_heads(cpt, base, scores, fraction=0.6)
+
+with rewound.trace(prompt):
+    logits = rewound.lm_head.output.save()
+```
+
+See [docs/patterns/spectral-head-rewind.md](./docs/patterns/spectral-head-rewind.md).
+
+
 ## Scanning (Shape Inference)
 
 Get shapes without running the full model. Like all tracing contexts, `.save()` is required to persist values outside the block:
