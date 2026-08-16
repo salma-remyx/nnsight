@@ -34,6 +34,7 @@ Multiple prompts, multiple invokes, attribution in one batch.
 
 - [multi-prompt-comparison](multi-prompt-comparison.md) - Multiple `tracer.invoke(...)` calls in one trace, empty invokes for batch-wide ops, and when you need a barrier.
 - [attribution-patching](attribution-patching.md) - Linear approximation of activation patching using corrupt-run gradients times clean-vs-corrupt activation differences.
+- [model-diffing](model-diffing.md) - Diff SAE feature activations between a base model and its fine-tuned (e.g. multimodal) counterpart, then remove or steer the isolated features.
 
 ## Gradients
 
