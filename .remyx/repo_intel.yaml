@@ -38,7 +38,14 @@ observed_landing_zones:
     call_site_specifics: ''
     branch: beyond-the-trace-coupling-an-interpretable-reasoning-state-r
     timestamp: '2026-08-22T04:18:16Z'
-  last_observed: '2026-08-22T04:18:16Z'
+  - arxiv: 2608.17687v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: 'Public library API surface: exported from src/nnsight/modeling/__init__.py
+      (importable as `from nnsight.modeling import find_routers, routing_features,
+      normalize_router_output, expert_usage`) and docu'
+    branch: mixture-of-expert-blocks-contain-strong-hallucination-detect
+    timestamp: '2026-08-22T15:37:27Z'
+  last_observed: '2026-08-22T15:37:27Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-22T04:18:16Z'
+last_updated: '2026-08-22T15:37:27Z'
