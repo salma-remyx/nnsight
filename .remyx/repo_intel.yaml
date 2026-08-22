@@ -33,7 +33,12 @@ observed_landing_zones:
       composed from pre-existing `model.edit()` (src/n
     branch: diffract-spectral-view-of-llm-domain-adaptation
     timestamp: '2026-08-15T14:28:40Z'
-  last_observed: '2026-08-15T14:28:40Z'
+  - arxiv: 2608.17638v1
+    mode: ''
+    call_site_specifics: ''
+    branch: beyond-the-trace-coupling-an-interpretable-reasoning-state-r
+    timestamp: '2026-08-22T04:18:16Z'
+  last_observed: '2026-08-22T04:18:16Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-15T14:28:40Z'
+last_updated: '2026-08-22T04:18:16Z'
