@@ -420,6 +420,26 @@ with model.trace("The Eiffel Tower is in the city of"):
 print(model.tokenizer.decode(tokens[0]))
 ```
 
+## MoE Routing Readout
+
+Reduce a mixture-of-experts model's router logits to a per-token interpretability signal. Four parameter-free statistics per layer — gate entropy, top-k margin, top-k mass, and expert spread — read straight off `mlp.gate.output` (works on both the vLLM and HuggingFace paths):
+
+```python
+from nnsight.modeling import RoutingReadout
+
+readout = RoutingReadout(top_k=8)   # the model's num_experts_per_tok
+
+with model.trace(prompt, temperature=0.0, max_tokens=64) as tracer:
+    blocks = readout.attach(
+        [model.model.layers[i].mlp.gate.output for i in (8, 16, 24)]
+    ).save()
+
+print(readout.describe())   # per-layer token-mean of each statistic
+# readout.vector -> [n_layers * 4] feature vector, e.g. for a fitted readout
+```
+
+See [docs/patterns/routing-readout.md](docs/patterns/routing-readout.md) for per-step logging during generation, router edits, and correlating the readout with model behavior.
+
 ---
 
 ## Core Concepts

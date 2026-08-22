@@ -19,6 +19,7 @@ What is happening inside the model on a given prompt?
 - [logit-lens](logit-lens.md) - Apply the final norm + unembedding to every layer's residual to "decode" what each layer is thinking.
 - [attention-patterns](attention-patterns.md) - Extract the attention probability matrix from a transformer block via `.source`.
 - [sae-and-auxiliary-modules](sae-and-auxiliary-modules.md) - Wire an SAE (or any auxiliary module) into a model and trace through it as a first-class submodule.
+- [routing-readout](routing-readout.md) - Reduce MoE router logits to a per-token signal (gate entropy, top-k margin, mass, spread) via `RoutingReadout`.
 
 ## Modify activations
 
