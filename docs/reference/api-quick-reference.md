@@ -81,6 +81,17 @@ Imported from the top-level `nnsight` package.
 
 Note: `nnsight.status()` is also available (the non-deprecated form of `ndif_status`).
 
+## MoE routing signals
+
+Imported from `nnsight.modeling`. See [../patterns/moe-routing-signals.md](../patterns/moe-routing-signals.md).
+
+| Item | Signature | One-liner |
+|------|-----------|-----------|
+| `find_routers` | `find_routers(model) -> list[Envoy]` | Every MoE router in an envoy tree, in module order — matches on shape, not name. |
+| `routing_features` | `routing_features(router_output, top_k=None, layer=None) -> dict` | Per-token routing statistics (entropy, top-k margin, expert load, ...) for one router's output. |
+| `normalize_router_output` | `normalize_router_output(output) -> (logits, weights, indices)` | Recover the logits triple from any router return layout. |
+| `expert_usage` | `expert_usage(features) -> Tensor` | Per-expert token histogram rebuilt from a features dict. |
+
 ## Model classes
 
 All are subclasses of `NNsight` (which itself is a subclass of `Envoy`).

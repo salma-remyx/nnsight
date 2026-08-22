@@ -368,6 +368,23 @@ with model.trace("Hello", temperature=0.0, max_tokens=5) as tracer:
 ```
 
 
+## MoE Routing Signals
+
+Per-token routing statistics from Mixture-of-Experts routers — router entropy, top-k margin, and expert load — as a signal source for hallucination localization and routing-health checks. Works on any architecture via shape-based router discovery (`mlp.gate`, `block_sparse_moe.router`, vLLM's `gate`):
+
+```python
+from nnsight.modeling import find_routers, routing_features
+
+routers = find_routers(model)          # one Envoy per MoE layer
+
+with model.trace(prompt):
+    feats = routing_features(routers[0].output)
+    entropy = feats["router_entropy"].save()   # one value per token
+```
+
+See [docs/patterns/moe-routing-signals.md](docs/patterns/moe-routing-signals.md).
+
+
 ## NNsight for Any PyTorch Model
 
 Use `NNsight` for arbitrary PyTorch models:
