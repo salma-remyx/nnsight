@@ -50,7 +50,14 @@ observed_landing_zones:
     call_site_specifics: ''
     branch: gradcuit-credit-assigned-gradient-flow-enables-robust-and-in
     timestamp: '2026-08-23T00:16:13Z'
-  last_observed: '2026-08-23T00:16:13Z'
+  - arxiv: 2608.16513v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "(none internally) \u2014 no pre-existing nnsight module\
+      \ invokes it; it is a new public library API exported from `src/nnsight/modeling/__init__.py`\
+      \ (`TrajectoryCorrector`, `DriftReport`, `cosine_drift`, `t"
+    branch: mllm-guided-semantic-correction-for-text-to-video-generation
+    timestamp: '2026-08-23T09:37:06Z'
+  last_observed: '2026-08-23T09:37:06Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-23T00:16:13Z'
+last_updated: '2026-08-23T09:37:06Z'
