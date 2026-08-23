@@ -57,7 +57,14 @@ observed_landing_zones:
       \ (`TrajectoryCorrector`, `DriftReport`, `cosine_drift`, `t"
     branch: mllm-guided-semantic-correction-for-text-to-video-generation
     timestamp: '2026-08-23T09:37:06Z'
-  last_observed: '2026-08-23T09:37:06Z'
+  - arxiv: 2608.10758v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "(none) \u2014 no pre-existing internal entry point invokes\
+      \ it. This is a library API addition: CausalScan, CausalScanReport, and grid_regions\
+      \ are exported from src/nnsight/modeling/__init__.py:2, making ex"
+    branch: where-to-look-causal-tracing-of-vision-encoders-in-vlm
+    timestamp: '2026-08-23T20:15:20Z'
+  last_observed: '2026-08-23T20:15:20Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-23T09:37:06Z'
+last_updated: '2026-08-23T20:15:20Z'
