@@ -40,6 +40,7 @@ Multiple prompts, multiple invokes, attribution in one batch.
 Backprop-based interpretability.
 
 - [gradient-based-attribution](gradient-based-attribution.md) - `with logits.sum().backward():` to compute saliency, integrated gradients, and per-component attribution.
+- [latent-optimization](latent-optimization.md) - Test-time gradient descent on a mid-layer latent over continuation log-probs, weights frozen, then re-inject during generation.
 
 ## Heads
 

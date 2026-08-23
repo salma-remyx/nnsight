@@ -269,6 +269,29 @@ print(grad.shape)
 ```
 
 
+## Test-Time Latent Optimization
+
+`LatentOptimizer` gradient-descends a latent addition to one block's residual stream on a target continuation's log-probabilities, with model weights frozen, then re-injects it during generation — adaptation from `nnsight.modeling.latent_optimization` (adapted from GradCuit, arXiv:2608.02585):
+
+```python
+from nnsight.modeling.latent_optimization import LatentOptimizer
+
+opt = LatentOptimizer(model, "The Eiffel Tower is in the city of",
+                      " Paris, the capital of France.", layer=6)
+
+with model.session():
+    for _ in range(opt.steps):
+        with model.trace(opt.text):
+            opt.step(opt.score())
+
+with model.generate(opt.prompt, max_new_tokens=8) as tracer:
+    opt.apply()
+    tokens = tracer.result.save()
+```
+
+See [docs/patterns/latent-optimization.md](./docs/patterns/latent-optimization.md) for per-token credit assignment and layer sweeps.
+
+
 ## Model Editing
 
 Create persistent model modifications:
