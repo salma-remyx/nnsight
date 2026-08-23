@@ -45,7 +45,12 @@ observed_landing_zones:
       normalize_router_output, expert_usage`) and docu'
     branch: mixture-of-expert-blocks-contain-strong-hallucination-detect
     timestamp: '2026-08-22T15:37:27Z'
-  last_observed: '2026-08-22T15:37:27Z'
+  - arxiv: 2608.02585v1
+    mode: ''
+    call_site_specifics: ''
+    branch: gradcuit-credit-assigned-gradient-flow-enables-robust-and-in
+    timestamp: '2026-08-23T00:16:13Z'
+  last_observed: '2026-08-23T00:16:13Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-22T15:37:27Z'
+last_updated: '2026-08-23T00:16:13Z'
