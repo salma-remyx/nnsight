@@ -571,6 +571,13 @@ class InterleavingTracer(Tracer):
 
         Returns:
             A :class:`Cache.CacheDict` that is populated during execution.
+
+        ``modules=None`` gives you every layer's output in one object, which is
+        the input most depth-wide analyses want.  See
+        :func:`nnsight.modeling.truthfulness.fit_truth_detector` and the
+        depth-averaged-truth-signals pattern under ``docs/patterns/`` for a
+        worked example that turns this cache into a depth-averaged
+        truthfulness score.
         """
 
         rename_dict = (

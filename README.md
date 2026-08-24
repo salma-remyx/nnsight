@@ -318,6 +318,22 @@ layer0_out = cache['model.transformer.h.0'].output
 print(cache.model.transformer.h[0].output[0].shape)
 ```
 
+### Depth-Averaged Truth Signals
+
+Fit a linear truthfulness probe at every layer from a single activation cache, then average the scores across depth to score generations for hallucination risk — adapted from [HalluTracer](https://arxiv.org/abs/2608.16353). See [docs/patterns/depth-averaged-truth-signals.md](docs/patterns/depth-averaged-truth-signals.md) for the full recipe.
+
+```python
+from nnsight.modeling import fit_truth_detector, truth_score
+from nnsight.modeling.truthfulness import layer_states
+
+with model.trace(prompts) as tracer:
+    cache = tracer.cache()
+
+states = layer_states(cache, pattern="transformer.h")   # [depth, batch, hidden]
+detector = fit_truth_detector(states, labels)
+scores, per_layer_curve = truth_score(detector, states) # higher = more truthful
+```
+
 
 ## Sessions
 
