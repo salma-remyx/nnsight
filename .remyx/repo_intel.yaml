@@ -64,7 +64,14 @@ observed_landing_zones:
       \ are exported from src/nnsight/modeling/__init__.py:2, making ex"
     branch: where-to-look-causal-tracing-of-vision-encoders-in-vlm
     timestamp: '2026-08-23T20:15:20Z'
-  last_observed: '2026-08-23T20:15:20Z'
+  - arxiv: 2608.16353v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: 'Public API surface `nnsight.modeling.__init__.py`, which
+      now exports `TruthDetector`, `fit_truth_detector`, `truth_score` alongside the
+      existing `NNsight` export; `layer_states`/`layer_agreement` are '
+    branch: hallutracer-hallucination-detection-via-depth-averaging-trut
+    timestamp: '2026-08-24T05:09:29Z'
+  last_observed: '2026-08-24T05:09:29Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-23T20:15:20Z'
+last_updated: '2026-08-24T05:09:29Z'
