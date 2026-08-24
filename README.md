@@ -319,6 +319,41 @@ print(cache.model.transformer.h[0].output[0].shape)
 ```
 
 
+## Timestep Feature Reuse
+
+Skip recomputing blocks whose features change slowly across iterations. On a diffusion
+denoiser (or any model whose modules fire once per iteration), this caches a block's
+output on every Nth timestep and predicts it in between by interpolating the cached
+samples — the block's forward is bypassed entirely, not merely overwritten:
+
+```python
+from nnsight.modeling import apply_feature_reuse
+
+report = {}
+with sd.generate("A photo of a cat", num_inference_steps=20) as tracer:
+    report["plans"] = apply_feature_reuse(
+        tracer,
+        *sd.feature_reuse({"unet.up_blocks.2": (4, 3)}),  # (stride, order)
+    )
+    for _ in tracer.iter[:]:
+        pass
+    output = tracer.output.save()
+
+print(report["plans"]["unet.up_blocks.2"].report("unet.up_blocks.2"))
+# unet.up_blocks.2: computed 5 timesteps [0, 4, 8, 12, 16], predicted 15 (75% reused, order=3)
+```
+
+Each module gets its own stride and interpolation order, so smooth blocks can be cached
+aggressively while noisy ones stay on the compute path. Modules not named in the spec are
+left untouched.
+
+Adapted from [LinCa: Accelerating Diffusion Models via Learnable Decomposed Feature
+Caching](https://arxiv.org/abs/2608.17973) — the decompose-predict-reuse loop with a
+parameter-free interpolation predictor in place of the learned one.
+
+See [docs/patterns/timestep-feature-reuse.md](docs/patterns/timestep-feature-reuse.md).
+
+
 ## Sessions
 
 Group multiple traces for efficiency:

@@ -35,6 +35,12 @@ Multiple prompts, multiple invokes, attribution in one batch.
 - [multi-prompt-comparison](multi-prompt-comparison.md) - Multiple `tracer.invoke(...)` calls in one trace, empty invokes for batch-wide ops, and when you need a barrier.
 - [attribution-patching](attribution-patching.md) - Linear approximation of activation patching using corrupt-run gradients times clean-vs-corrupt activation differences.
 
+## Efficiency
+
+Cut compute during iterative generation.
+
+- [timestep-feature-reuse](timestep-feature-reuse.md) - Cache a block's output every Nth timestep and predict it in between, bypassing the forward entirely.
+
 ## Gradients
 
 Backprop-based interpretability.

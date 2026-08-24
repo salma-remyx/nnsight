@@ -2,6 +2,7 @@ from typing import Dict, Optional, Type, Union
 
 import torch
 
+from .. import util
 from ..intervention.envoy import Envoy
 
 
@@ -90,6 +91,64 @@ class NNsight(Envoy):
         state = super().__getstate__()
         state["_model"] = self._module
         return state
+
+    def feature_reuse(self, spec=None):
+        """Map a timestep feature-reuse schedule onto this model's modules.
+
+        Returns the ``(modules, plan)`` pair that
+        :func:`nnsight.modeling.feature_reuse.apply_feature_reuse` expects,
+        with the envoys resolved for you.  ``spec`` keys are dotted paths
+        relative to the model root (``"unet.up_blocks.2"``,
+        ``"transformer.transformer_blocks.1"``); values are a stride, a
+        ``(stride, order)`` tuple, or a
+        :class:`~nnsight.modeling.feature_reuse.FeatureReusePlan`.
+
+        Modules not named in ``spec`` stay on the compute path, which is what
+        you want — reuse is a per-block decision and the gains come from
+        caching a subset, not everything.
+
+        Example (a diffusion denoiser, the intended target)::
+
+            from nnsight.modeling import apply_feature_reuse
+
+            with sd.generate(prompt, num_inference_steps=20) as tracer:
+                stats = apply_feature_reuse(
+                    tracer, *sd.feature_reuse({"unet.up_blocks.2": (4, 3)})
+                )
+                for _ in tracer.iter[:]:
+                    pass
+                output = tracer.output.save()
+
+        Args:
+            spec (dict): Reuse schedule keyed by module path.  ``None`` or
+                empty returns an empty pair (no reuse).
+
+        Returns:
+            Tuple of ``(modules, plan)`` for ``apply_feature_reuse``.
+
+        Raises:
+            AttributeError: If a key does not resolve to a module of this
+                model.
+        """
+        modules = {}
+        plan = {}
+
+        for key, value in (spec or {}).items():
+            # Resolve against the envoy tree (not the raw module) so the
+            # result carries .output / .skip.
+            try:
+                envoy = util.fetch_attr(self, key) if key else None
+            except AttributeError:
+                envoy = None
+            if envoy is None:
+                raise AttributeError(
+                    f"{key!r} does not resolve to a module on this model. "
+                    "Keys are dotted paths relative to the model root."
+                )
+            modules[key] = envoy
+            plan[key] = value
+
+        return modules, plan
 
     def __setstate__(self, state):
         super().__setstate__(state)
