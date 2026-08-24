@@ -72,6 +72,18 @@ observed_landing_zones:
     branch: hallutracer-hallucination-detection-via-depth-averaging-trut
     timestamp: '2026-08-24T05:09:29Z'
   last_observed: '2026-08-24T05:09:29Z'
+- path: src/nnsight/modeling/
+  shape_tags:
+  - library-shape-public-api
+  confirmed_by:
+  - arxiv: 2608.17973v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: NNsight.feature_reuse() is added to the pre-existing base
+      class in src/nnsight/modeling/base.py (inherited by LanguageModel, VisionLanguageModel,
+      DiffusionModel), and apply_feature_reuse / FeatureReus
+    branch: linca-accelerating-diffusion-models-via-learnable-decomposed
+    timestamp: '2026-08-24T16:07:36Z'
+  last_observed: '2026-08-24T16:07:36Z'
 rejected_shapes: []
 coordination_signals: []
-last_updated: '2026-08-24T05:09:29Z'
+last_updated: '2026-08-24T16:07:36Z'
